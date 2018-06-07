@@ -14,10 +14,14 @@ public class SpeechtoText_main {
 
 	public static void main(String[] args){
 		SpeechToText service = new SpeechToText();
-	    service.setUsernameAndPassword("","j16004");
+	    service.setUsernameAndPassword("j16004","j16004");
 
 	    File audio = new File("audio/output.wav");
 	    RecognizeOptions options = null;
+
+	    MySQL mysql = new MySQL();
+	    //mysql.updateImage("a", 0.5);
+
 		try {
 			options = new RecognizeOptions.Builder()
 				.model("ja-JP_BroadbandModel")
@@ -36,17 +40,20 @@ public class SpeechtoText_main {
 	    try {
 			JsonNode node = mapper.readTree(s);
 
+			for(int i = 0; i< node.get("results").size(); i++){
 			String transcript1 = node.get("results").get(0).get("alternatives").get(0).get("transcript").asText();
 			System.out.println("transcript : " + transcript1);
 
 			float confidence1 = node.get("results").get(0).get("alternatives").get(0).get("confidence").floatValue();
 			System.out.println("confidence : " + confidence1);
 
+			mysql.updateImage(transcript1, confidence1);
+			}
+
 		} catch (IOException e) {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
-
 
 	}
 }
